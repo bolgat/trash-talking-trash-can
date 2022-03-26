@@ -2,6 +2,7 @@ import discord # discord bot API
 from discord.commands import Option
 import configparser
 from datetime import datetime
+import pickle
 
 # the intents stuff is required for getting a list of members of a server
 intents = discord.Intents.all()
@@ -18,20 +19,20 @@ async def on_ready():
 
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="your waste")) # a fun discord status thing
 
-# Option for triggering commands on a message
-@client.event
-async def on_message():
-	
-
 # Slash command for accessing bot data
 @client.slash_command(
     name='view_data',
     description='View Bot Data'
 )
 async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
+    
+    try:
+        with open("datafile.txt", "rb") as datafile:
+            trash_data = pickle.load(datafile)
+            await ctx.respond(f"**You asked for data for the past:**\n{trash_data}")
+    except:
+        await ctx.respond("Error, could not load the data!")
 
-	trash_data = pickle.loads(datafile)
-    await ctx.respond(f"**You asked for data for the past:**\n{trash_data}")
 
 
 # Read the token and run the bot

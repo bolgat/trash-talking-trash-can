@@ -1,2 +1,3 @@
+[tokens]
 
-TTTbot = <ENTER-TOKEN-HERE>
+TTTbot = OTU3MzY1ODc0ODA3OTUxMzgw.Yj9ucw.m6fwHjgH3qSeHL2c35uxppcRdo4
