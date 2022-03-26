@@ -5,6 +5,14 @@ import pickle
 import time
 import grovepi
 
+        
+
+# GLOBAL VARIABLES
+
+LOOP_LEN = 0.1 # seconds
+NOT_MOVING_THRESH = int(2.0/LOOP_LEN) # iterations
+OBJ_DETECT_THRESH = int(1.0/LOOP_LEN) # iterations
+
 # Data storage format
 class TrashData:
 
@@ -20,6 +28,7 @@ class TTTcan:
         self.baseline_trash = self.get_trash_level()
         self.trash_level = 0
         self.trash_count = 0
+        self.obj_detect_count = 0
         # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
         try:
             with open("datafile.txt", "rb") as datafile:
@@ -31,7 +40,7 @@ class TTTcan:
     STATES
 
     IDLE #default state
-    OPEN
+    OBJ_DETECTED
     MOVING #if we are emptying the trash it is important to know if we are moving
     '''
     def state_transition(self):
@@ -59,6 +68,7 @@ class TTTcan:
                 self.trash_count += 1
                 self.say_voice_line()
                 self.log_data()
+                self.state = "OBJ_DETECTED"
         
         '''
         if(self.state == "MOVING"):
@@ -73,15 +83,26 @@ class TTTcan:
                 self.state = "MOVING"
                 self.not_moving_time = 20
         '''
+    
+        if(self.state =="OBJ_DETECTED"):
+            if(self.obj_detect_count == OBJ_DETECT_THRESH):
+                self.state = "IDLE"
+                self.obj_detect_count = 0            
+            elif(not self.detect_object()):
+                self.obj_detect_count += 1
+            else:
+                self.state = "OBJ_DETECTED"
+                self.obj_detect_count = 0
+
 
     def log_data(self):
         self.trash_level = self.get_trash_level()
-        trash_data.append(TrashData(
+        self.trash_data.append(TrashData(
             self.trash_level / self.baseline_trash, 
             self.trash_count
         ))
         with open("datafile.txt", "wb") as datafile:
-            pickle.dumps(self.data, data_file)
+            pickle.dump(self.trash_data, datafile)
 
 
     def detect_object(self):
@@ -90,7 +111,7 @@ class TTTcan:
             # Read distance value from Ultrasonic
             distance = grovepi.ultrasonicRead(ultrasonic_ranger)
 
-         except Exception as e:
+        except Exception as e:
             print ("Error:{}".format(e))
         
         if (distance < 30):
@@ -100,12 +121,12 @@ class TTTcan:
 
 
     def get_trash_level(self):
-        ultrasonic ranger = 8
+        ultrasonic_ranger = 8
         try:
             # Read distance value from Ultrasonic
             distance = grovepi.ultrasonicRead(ultrasonic_ranger)
 
-         except Exception as e:
+        except Exception as e:
             print ("Error:{}".format(e))
         
         return distance
@@ -113,14 +134,7 @@ class TTTcan:
     def say_voice_line(self):
         print("object detected")
 
-        
 
-        
-
-# GLOBAL VARIABLES
-
-LOOP_LEN = 0.1 # seconds
-NOT_MOVING_THRESH = 2.0 # seconds
 
 
 if __name__ == "__main__":
