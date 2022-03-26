@@ -24,7 +24,7 @@ class TTTcan:
         	with open("datafile.csv", "r") as datafile:
         		datareader = csv.reader(datafile)
         		for row in datareader:
-        			trash_data.append(row)
+        			self.trash_data.append(row)
        	except:
        		pass
         # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting

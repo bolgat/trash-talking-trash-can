@@ -26,12 +26,14 @@ async def on_ready():
 async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
     
     try:
-        with open("datafile.txt", "rb") as datafile:
-            trash_data = pickle.load(datafile)
+        with open("datafile.csv", "r") as datafile:
+            trash_data = []
+            datareader = csv.reader(datafile)
+            for row in datareader:
+                trash_data.append(row)
             await ctx.respond(f"**You asked for data for the past:**\n{trash_data}")
     except:
         await ctx.respond("Error, could not load the data!")
-
 
 
 # Read the token and run the bot
