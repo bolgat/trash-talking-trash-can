@@ -20,7 +20,7 @@ class TTTcan:
 		self.baseline_trash = self.get_trash_level()
 		self.trash_level = 0
 		self.trash_count = 0
-		self.not_moving_time = 20
+		# self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
 		try:
 			with open("datafile.txt", "rb") as datafile:
 				self.trash_data = pickle.load(datafile)
@@ -116,6 +116,12 @@ class TTTcan:
 		
 
 		
+
+# GLOBAL VARIABLES
+
+LOOP_LEN = 0.1 # seconds
+NOT_MOVING_THRESH = 2.0 # seconds
+
 
 if __name__ == "__main__":
 
