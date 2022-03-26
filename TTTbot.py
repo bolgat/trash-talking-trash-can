@@ -1,49 +1,45 @@
-
-from utils import *
-
 import discord # discord bot API
 from discord.commands import Option
-import pathlib
-import os
 import configparser
 from datetime import datetime
-from constants import *         # relevant constants for our bot
 
 # the intents stuff is required for getting a list of members of a server
 intents = discord.Intents.all()
 
 client = discord.Bot()
-logging = get_bot_logger()
 
 # what the bot should do when it boots up
 @client.event
 async def on_ready():
-    logging.info("The bot is online and active")
-    logging.info("bot name: {}".format(client.user))
+    print("The bot is online and active")
 
     guild = discord.utils.get(client.guilds)
-    logging.info("{} is connected to the following guild: {}".format(client.user, guild.name))
+    print("{} is connected to the following guild: {}".format(client.user, guild.name))
 
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="your documentation")) # a fun discord status thing
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="your waste")) # a fun discord status thing
 
+# Option for triggering commands on a message
+@client.event
+async def on_message():
+	
+
+# Slash command for accessing bot data
 @client.slash_command(
-    name='review',
-    description='Create a Thread to Review a Confluence Page'
+    name='view_data',
+    description='View Bot Data'
 )
-async def review(ctx, confpage: Option(str, "Link to a Confluence page", required = True)):
-    spl_page = confpage.split('/')
-    title = spl_page[-1].replace('+',' ')
-    response = await ctx.respond(f"**Request for Review:**\n{confpage}")
-    message = await response.original_message()
-    await message.create_thread(name=title)
+async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
 
+	trash_data = pickle.loads(datafile)
+    await ctx.respond(f"**You asked for data for the past:**\n{trash_data}")
+
+
+# Read the token and run the bot
 token = ""
 tokens_file = "token.txt"
 token_list = configparser.ConfigParser()
-
 token_list.read(tokens_file)
 token_list = token_list["tokens"]
 token = token_list["TTTbot"]
-logging.info("Starting bot")
-logging.info("Time: {}".format(datetime.now()))
+print("Starting bot")
 client.run(token)
