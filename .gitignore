@@ -1,5 +1,6 @@
 .vscode/
 token.txt
+datafile.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
