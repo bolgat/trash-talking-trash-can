@@ -1,3 +1,0 @@
-[tokens]
-
-TTTbot = <ENTER_TOKEN_HERE>
