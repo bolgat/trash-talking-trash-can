@@ -1,25 +1,14 @@
 
 from datetime import datetime
 import csv
-import pickle
 import time
 import grovepi
-
-        
 
 # GLOBAL VARIABLES
 
 LOOP_LEN = 0.1 # seconds
 NOT_MOVING_THRESH = int(2.0/LOOP_LEN) # iterations
 OBJ_DETECT_THRESH = int(1.0/LOOP_LEN) # iterations
-
-# Data storage format
-class TrashData:
-
-    def __init__(self, trash_level, trash_count):
-        self.time = datetime.now()
-        self.trash_level = trash_level
-        self.trash_count = trash_count
 
 # Trash-Talking Trash Can Class
 class TTTcan:
@@ -29,12 +18,16 @@ class TTTcan:
         self.trash_level = 0
         self.trash_count = 0
         self.obj_detect_count = 0
-        # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
+        self.trash_data = []
+
         try:
-            with open("datafile.txt", "rb") as datafile:
-                self.trash_data = pickle.load(datafile)
-        except:
-            self.trash_data = []
+        	with open("datafile.csv", "r") as datafile:
+        		datareader = csv.reader(datafile)
+        		for row in datareader:
+        			trash_data.append(row)
+       	except:
+       		pass
+        # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
 
     '''
     STATES
@@ -97,13 +90,15 @@ class TTTcan:
 
     def log_data(self):
         self.trash_level = self.get_trash_level()
-        self.trash_data.append(TrashData(
-            self.trash_level / self.baseline_trash, 
+        self.trash_data.append([
+        	datetime.now()
+        	self.trash_level / self.baseline_trash, 
             self.trash_count
-        ))
-        with open("datafile.txt", "wb") as datafile:
-            pickle.dump(self.trash_data, datafile)
-
+        ])
+            
+        with open("datafile.csv", "w") as datafile:
+        	datawriter = csv.writer(datafile)
+        	datawriter.writerows(trash_data)
 
     def detect_object(self):
         ultrasonic_ranger = 7

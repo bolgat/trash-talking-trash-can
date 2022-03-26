@@ -2,7 +2,6 @@ import discord # discord bot API
 from discord.commands import Option
 import configparser
 from datetime import datetime
-import pickle
 
 # the intents stuff is required for getting a list of members of a server
 intents = discord.Intents.all()
