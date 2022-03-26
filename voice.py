@@ -10,7 +10,6 @@ class Voice:
 		self.engine.say(audio)
 		self.engine.runAndWait() # Makes the audio available to the user
 		
-		
 if __name__ == "__main__":
 	fred = Voice()
 	fred.speak('Put that away, idiot!')
