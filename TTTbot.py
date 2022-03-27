@@ -1,13 +1,9 @@
-import matplotlib
-from matplotlib import dates
-from datetime import datetime
-
 import discord # discord bot API
 from discord.commands import Option
 import csv
 import configparser
 from datetime import datetime
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # the intents stuff is required for getting a list of members of a server
 intents = discord.Intents.all()
@@ -49,16 +45,15 @@ async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
                 trash_count.append(row[2])
                 #print(trash_data)
             if(timespan == "level"):
-                plt.plot(datetime_list, trash_level)
+                px.line(x=datetime_list, y=trash_level)
             else:
-                plt.plot(datetime_list, trash_count)
-            plt.savefig("plot.png")
-            await ctx.respond((file=discord.File('plot.png')))
+                px.line(x=datetime_list, y=trash_count)
+            px.write_image("plot.png")
+            with open("plot.png", "rb") as fh:
+                f = discord.File(fh, filenamee="plot.png")
+            await ctx.respond(file=f)
     except:
         await ctx.respond("Error, could not load the data!")
-
-
-
 
 
 # Read the token and run the bot
