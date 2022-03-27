@@ -3,6 +3,7 @@ from datetime import datetime
 import csv
 import time
 import grovepi
+import accel_driver
 
 # GLOBAL VARIABLES
 
@@ -127,7 +128,8 @@ class TTTcan:
         return distance
     
     def say_voice_line(self):
-        print("object detected")
+    	xl = accel()
+        print(xl.read_accel())
 
 
 
