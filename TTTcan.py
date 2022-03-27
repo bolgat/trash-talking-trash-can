@@ -5,6 +5,7 @@ import csv
 import time
 import grovepi
 import accel_driver
+import vlc
 
 # GLOBAL VARIABLES
 
@@ -12,6 +13,7 @@ LOOP_LEN = 0.1 # seconds
 NOT_MOVING_THRESH = int(2.0/LOOP_LEN) # iterations
 OBJ_DETECT_THRESH = int(1.0/LOOP_LEN) # iterations
 STATE_DEBUG = 1
+VOICE_LINES_DICT = {"file.mp3": 2.0}
 
 # Trash-Talking Trash Can Class
 class TTTcan:
@@ -153,9 +155,19 @@ class TTTcan:
         return distance
     
     def say_voice_line(self):
-        # This is temporary
-        xl = accel_driver.accel()
-        print(xl.read_accel())
+        # file_to_play will be chosen from dictionary of files for the moving condition
+        # the dictionary should be hard-coded to contain the length of the sound file as the value (key=filename)
+        if self.state == "MOVING":
+            file_to_play = "file.mp3" # putting a filename here temporarily
+        # we need to write code that will choose file_to_play based on parameters trash_count and trash_level
+        else:
+            file_to_play = "file.mp3"
+
+        vlc_obj = vlc.MediaPlayer(file_to_play)
+        vlc_obj.play()
+        time.sleep(VOICE_LINES_DICT["file.mp3"])
+        vlc_obj.stop()
+
 
 
 
