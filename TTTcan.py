@@ -6,14 +6,14 @@ import time
 import grovepi
 import accel_driver
 import vlc
+import random
 
 # GLOBAL VARIABLES
 
-LOOP_LEN = 0.1 # seconds
+LOOP_LEN = 0.05 # seconds
 NOT_MOVING_THRESH = int(2.0/LOOP_LEN) # iterations
 OBJ_DETECT_THRESH = int(1.0/LOOP_LEN) # iterations
 STATE_DEBUG = 1
-VOICE_TIMES_LIST = [2.0]
 
 # Trash-Talking Trash Can Class
 class TTTcan:
@@ -161,16 +161,16 @@ class TTTcan:
             # Give a random number from 1-50
             random_track = random.randint(1,10)
         # we need to write code that will choose file_to_play based on parameters trash_count and trash_level
-        elif trash_level > 0.3:
+        elif self.trash_level > 0.3:
             # Give a random number from 1-50
-            random_track = random.randint(11,40)
+            random_track = random.randint(11,35)
         else:
-            random_track = random.randint(41,50)
+            random_track = random.randint(36,45)
             
-        file_to_play = str(int) + ".mp3"
+        file_to_play = "./audio/" + str(random_track) + ".mp3"
         vlc_obj = vlc.MediaPlayer(file_to_play)
         vlc_obj.play()
-        time.sleep(VOICE_TIMES_LIST[random_track])
+        time.sleep(2)
         vlc_obj.stop()
 
 
