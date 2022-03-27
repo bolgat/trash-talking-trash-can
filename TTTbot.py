@@ -1,16 +1,13 @@
 import discord # discord bot API
-from discord.commands import Option
 import csv
 import configparser
 from datetime import datetime
-import plotly.express as px
+import matplotlib.pyplot as plt
 
 # the intents stuff is required for getting a list of members of a server
 intents = discord.Intents.all()
 
-client = discord.Bot()
-
-
+client = discord.Client()
 
 # what the bot should do when it boots up
 @client.event
@@ -23,37 +20,39 @@ async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="your waste")) # a fun discord status thing
 
 # Slash command for accessing bot data
-@client.slash_command(
-    name='view_data',
-    description='View Bot Data'
-)
-async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
+@client.event
+async def on_message(message):
 
     # initializing three lists to store date time, trash level, trash count
     datetime_list = []
     trash_level = []
     trash_count = []
 
-    try:
+#try:
+    if(message.content.startswith("!plot")):
         with open("datafile.csv", "r") as datafile:
             trash_data = []
             datareader = csv.reader(datafile)
             #print(datareader)
             for row in datareader:
-                datetime_list.append(datetime.strptime(row[1], '%d/%m/%y %H:%M:%S'))
-                trash_level.append(row[1])
-                trash_count.append(row[2])
+                datetime_list.append(datetime.strptime(row[0][:19], '%Y-%m-%d %H:%M:%S%f'))
+                trash_level.append(float(row[1]))
+                trash_count.append(int(row[2]))
                 #print(trash_data)
-            if(timespan == "level"):
-                px.line(x=datetime_list, y=trash_level)
+            if(message.content.find("level") != -1):
+                plt.plot(datetime_list, trash_level)
+                plt.ylim([0,1.4])
+                plt.title("Trash Level vs. Time")
             else:
-                px.line(x=datetime_list, y=trash_count)
-            px.write_image("plot.png")
+                plt.plot(datetime_list, trash_count)
+                plt.title("Cumulative Trash Count vs. Time")
+            plt.savefig("plot.png")
+            plt.cla()
             with open("plot.png", "rb") as fh:
-                f = discord.File(fh, filenamee="plot.png")
-            await ctx.respond(file=f)
-    except:
-        await ctx.respond("Error, could not load the data!")
+                f = discord.File(fh, filename="plot.png")
+            await message.channel.send(file=f)
+    #except:
+    #    await message.channel.send("Error, could not load the data!")
 
 
 # Read the token and run the bot
