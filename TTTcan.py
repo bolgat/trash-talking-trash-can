@@ -11,6 +11,7 @@ import accel_driver
 LOOP_LEN = 0.1 # seconds
 NOT_MOVING_THRESH = int(2.0/LOOP_LEN) # iterations
 OBJ_DETECT_THRESH = int(1.0/LOOP_LEN) # iterations
+STATE_DEBUG = 1
 
 # Trash-Talking Trash Can Class
 class TTTcan:
@@ -46,6 +47,9 @@ class TTTcan:
     def state_transition(self):
         if(self.state == "IDLE"):
 
+            if STATE_DEBUG:
+                print("State: IDLE")
+
             if(self.detect_motion()):
                 self.state = "MOVING"
                 self.say_voice_line()
@@ -60,6 +64,9 @@ class TTTcan:
         
         if(self.state == "MOVING"):
 
+            if STATE_DEBUG:
+                print("State: MOVING")
+
             if(self.motion_detect_count == NOT_MOVING_THRESH):
                 self.state = "IDLE"
                 self.motion_detect_count = 0
@@ -70,6 +77,10 @@ class TTTcan:
                 self.motion_detect_count = 0
     
         if(self.state =="OBJ_DETECTED"):
+
+            if STATE_DEBUG:
+                print("State: OBJ_DETECTED")
+
             if(self.detect_motion()):
                 self.state = "MOVING"
                 self.say_voice_line()
@@ -111,7 +122,7 @@ class TTTcan:
 
     def detect_motion(self):
         accel = self.xl.read_accel()
-        diff = [ accel[0]-self.baseline_accel[0] , accel[1]-self.baseline_accel[1] , accel[2]-self.baseline_accel[2] ]
+        diff = [ accel[0]-self.baseline_accel[0], accel[1]-self.baseline_accel[1], accel[2]-self.baseline_accel[2] ]
         mag_diff = math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2])
 
         if (mag_diff > 0.5):
