@@ -47,12 +47,13 @@ class TTTcan:
     def state_transition(self):
         if(self.state == "IDLE"):
 
-            if STATE_DEBUG:
-                print("State: IDLE")
-
             if(self.detect_motion()):
                 self.state = "MOVING"
                 self.say_voice_line()
+
+                if STATE_DEBUG:
+                    print("State: MOVING")
+
             else:
                 self.state = "IDLE"
             if(self.detect_object()):
@@ -60,16 +61,20 @@ class TTTcan:
                 self.say_voice_line()
                 self.log_data()
                 self.state = "OBJ_DETECTED"
+
+                if STATE_DEBUG:
+                    print("State: OBJ_DETECTED")
         
         
         if(self.state == "MOVING"):
 
-            if STATE_DEBUG:
-                print("State: MOVING")
-
             if(self.motion_detect_count == NOT_MOVING_THRESH):
                 self.state = "IDLE"
                 self.motion_detect_count = 0
+
+                if STATE_DEBUG:
+                    print("State: IDLE")
+
             elif(not self.detect_motion()):
                 self.motion_detect_count += 1
             else:
@@ -78,12 +83,13 @@ class TTTcan:
     
         if(self.state =="OBJ_DETECTED"):
 
-            if STATE_DEBUG:
-                print("State: OBJ_DETECTED")
-
             if(self.detect_motion()):
                 self.state = "MOVING"
                 self.say_voice_line()
+
+                if STATE_DEBUG:
+                    print("State: MOVING")
+
             elif(self.obj_detect_count == OBJ_DETECT_THRESH):
                 self.state = "IDLE"
                 self.obj_detect_count = 0            
