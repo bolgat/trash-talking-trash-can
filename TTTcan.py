@@ -26,6 +26,7 @@ class TTTcan:
         		datareader = csv.reader(datafile)
         		for row in datareader:
         			self.trash_data.append(row)
+        		self.trash_count = int(datareader[-1][-1])
        	except:
        		pass
         # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
@@ -92,17 +93,17 @@ class TTTcan:
     def log_data(self):
         self.trash_level = self.get_trash_level()
         self.trash_data.append([
-        	datetime.now()
+        	datetime.now(),
         	self.trash_level / self.baseline_trash, 
             self.trash_count
         ])
             
         with open("datafile.csv", "w") as datafile:
         	datawriter = csv.writer(datafile)
-        	datawriter.writerows(trash_data)
+        	datawriter.writerows(self.trash_data)
 
     def detect_object(self):
-        ultrasonic_ranger = 7
+        ultrasonic_ranger = 4
         try:
             # Read distance value from Ultrasonic
             distance = grovepi.ultrasonicRead(ultrasonic_ranger)
@@ -110,7 +111,7 @@ class TTTcan:
         except Exception as e:
             print ("Error:{}".format(e))
         
-        if (distance < 30):
+        if (distance < 20):
             return True
         else:
             return False
@@ -121,6 +122,7 @@ class TTTcan:
         try:
             # Read distance value from Ultrasonic
             distance = grovepi.ultrasonicRead(ultrasonic_ranger)
+            print(distance)
 
         except Exception as e:
             print ("Error:{}".format(e))
@@ -128,9 +130,9 @@ class TTTcan:
         return distance
     
     def say_voice_line(self):
-    	xl = accel()
+        # This is temporary
+        xl = accel_driver.accel()
         print(xl.read_accel())
-
 
 
 
