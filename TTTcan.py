@@ -1,5 +1,6 @@
 
 from datetime import datetime
+import math
 import csv
 import time
 import grovepi
@@ -108,6 +109,15 @@ class TTTcan:
         else:
             return False
 
+    def detect_motion(self):
+        accel = xl.read_accel()
+        diff = [ accel[0]-self.baseline_accel[0] , accel[1]-self.baseline_accel[1] , accel[2]-self.baseline_accel[2] ]
+        mag_diff = math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2])
+
+        if (mag_diff > 0.5):
+            return True
+        else:
+            return False
 
     def get_trash_level(self):
         ultrasonic_ranger = 8
