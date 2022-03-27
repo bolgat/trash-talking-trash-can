@@ -19,7 +19,11 @@ class TTTcan:
         self.trash_level = 0
         self.trash_count = 0
         self.obj_detect_count = 0
+        self.motion_detect_count = 0
         self.trash_data = []
+
+        xl = accel_driver.accel()
+        self.baseline_accel = xl.read_accel()
 
         try:
         	with open("datafile.csv", "r") as datafile:
@@ -40,47 +44,35 @@ class TTTcan:
     '''
     def state_transition(self):
         if(self.state == "IDLE"):
-            '''if(self.detect_motion()):
-                self.state = "MOVING"
-                self.say_voice_line()
-            elif(self.detect_light()):
-                self.state = "OPEN"
-                self.say_voice_line()
-            else:
-                self.state = "IDLE"
-            '''
 
-            '''if(self.detect_motion):
+            if(self.detect_motion()):
                 self.state = "MOVING"
                 self.say_voice_line()
-                
-            elif(self.detect_darkness):
-                self.state = "IDLE"
             else:
-                self.state = "OPEN"
-            '''
+                self.state = "IDLE"
             if(self.detect_object()):
                 self.trash_count += 1
                 self.say_voice_line()
                 self.log_data()
                 self.state = "OBJ_DETECTED"
         
-        '''
+        
         if(self.state == "MOVING"):
 
-            if(self.not_moving_time == 0):
+            if(self.motion_detect_count == NOT_MOVING_THRESH):
                 self.state = "IDLE"
-                self.not_moving_time = 20
-                self.log_data()
-            elif(not_moving):
-                self.not_moving_time -= 1
+                self.motion_detect_count = 0
+            elif(not detect_motion()):
+                self.motion_detect_count += 1
             else:
                 self.state = "MOVING"
-                self.not_moving_time = 20
-        '''
+                self.motion_detect_count = 0
     
         if(self.state =="OBJ_DETECTED"):
-            if(self.obj_detect_count == OBJ_DETECT_THRESH):
+            if(self.detect_motion()):
+                self.state = "MOVING"
+                self.say_voice_line()
+            elif(self.obj_detect_count == OBJ_DETECT_THRESH):
                 self.state = "IDLE"
                 self.obj_detect_count = 0            
             elif(not self.detect_object()):
