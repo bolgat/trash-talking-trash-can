@@ -92,7 +92,11 @@ class TTTcan:
 
             elif(self.obj_detect_count == OBJ_DETECT_THRESH):
                 self.state = "IDLE"
-                self.obj_detect_count = 0            
+                self.obj_detect_count = 0
+
+                if STATE_DEBUG:
+                    print("State: IDLE")
+
             elif(not self.detect_object()):
                 self.obj_detect_count += 1
             else:
