@@ -1,5 +1,6 @@
 import discord # discord bot API
 from discord.commands import Option
+import csv
 import configparser
 from datetime import datetime
 
@@ -29,8 +30,10 @@ async def view_data(ctx, timespan: Option(str, "timespan", required = True)):
         with open("datafile.csv", "r") as datafile:
             trash_data = []
             datareader = csv.reader(datafile)
+            #print(datareader)
             for row in datareader:
                 trash_data.append(row)
+                #print(trash_data)
             await ctx.respond(f"**You asked for data for the past:**\n{trash_data}")
     except:
         await ctx.respond("Error, could not load the data!")
