@@ -23,17 +23,17 @@ class TTTcan:
         self.motion_detect_count = 0
         self.trash_data = []
 
-        xl = accel_driver.accel()
-        self.baseline_accel = xl.read_accel()
+        self.xl = accel_driver.accel()
+        self.baseline_accel = self.xl.read_accel()
 
         try:
-        	with open("datafile.csv", "r") as datafile:
-        		datareader = csv.reader(datafile)
-        		for row in datareader:
-        			self.trash_data.append(row)
-        		self.trash_count = int(datareader[-1][-1])
-       	except:
-       		pass
+            with open("datafile.csv", "r") as datafile:
+                datareader = csv.reader(datafile)
+                for row in datareader:
+                    self.trash_data.append(row)
+                self.trash_count = int(datareader[-1][-1])
+        except:
+            pass
         # self.not_moving_threshold = 2/LOOP_LEN # amt of time TTTcan is stationary b4 it considers itself resting
 
     '''
@@ -63,7 +63,7 @@ class TTTcan:
             if(self.motion_detect_count == NOT_MOVING_THRESH):
                 self.state = "IDLE"
                 self.motion_detect_count = 0
-            elif(not detect_motion()):
+            elif(not self.detect_motion()):
                 self.motion_detect_count += 1
             else:
                 self.state = "MOVING"
@@ -86,14 +86,14 @@ class TTTcan:
     def log_data(self):
         self.trash_level = self.get_trash_level()
         self.trash_data.append([
-        	datetime.now(),
-        	self.trash_level / self.baseline_trash, 
+            datetime.now(),
+            self.trash_level / self.baseline_trash, 
             self.trash_count
         ])
             
         with open("datafile.csv", "w") as datafile:
-        	datawriter = csv.writer(datafile)
-        	datawriter.writerows(self.trash_data)
+            datawriter = csv.writer(datafile)
+            datawriter.writerows(self.trash_data)
 
     def detect_object(self):
         ultrasonic_ranger = 4
@@ -110,7 +110,7 @@ class TTTcan:
             return False
 
     def detect_motion(self):
-        accel = xl.read_accel()
+        accel = self.xl.read_accel()
         diff = [ accel[0]-self.baseline_accel[0] , accel[1]-self.baseline_accel[1] , accel[2]-self.baseline_accel[2] ]
         mag_diff = math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2])
 
